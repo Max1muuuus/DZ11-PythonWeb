@@ -1,0 +1,10 @@
+{% extends "events/base.html" %}
+{% block title %}Вхід{% endblock %}
+{% block content %}
+<section class="form-card">
+  <h1>Вхід до EventHub</h1>
+  {% if form.errors %}<p class="error">Перевірте ім'я користувача та пароль.</p>{% endif %}
+  <form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button class="button" type="submit">Увійти</button></form>
+  <p>Ще не маєте профілю? <a href="{% url 'events:register' %}">Зареєструватися</a></p>
+</section>
+{% endblock %}

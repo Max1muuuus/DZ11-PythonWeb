@@ -1,0 +1,36 @@
+{% extends "events/base.html" %}
+{% block title %}Мій профіль{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Особистий кабінет</p><h1>{{ user.get_full_name|default:user.username }}</h1><p>{{ user.email }}</p></div>
+  <a class="button secondary" href="{% url 'events:profile_edit' %}">Редагувати профіль</a>
+</section>
+<h2>Історія бронювань</h2>
+<div class="tabs">
+  <a href="{% url 'events:profile' %}" class="{% if not selected_status %}selected{% endif %}">Усі</a>
+  <a href="?status=active" class="{% if selected_status == 'active' %}selected{% endif %}">Активні</a>
+  <a href="?status=cancelled" class="{% if selected_status == 'cancelled' %}selected{% endif %}">Скасовані</a>
+  <a href="?status=completed" class="{% if selected_status == 'completed' %}selected{% endif %}">Завершені</a>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Захід</th><th>Дата</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+      {% for booking in bookings %}
+        <tr>
+          <td><a href="{% url 'events:event_detail' booking.event.pk %}">{{ booking.event.title }}</a></td>
+          <td>{{ booking.event.starts_at|date:"d.m.Y H:i" }}</td>
+          <td>{{ booking.display_status }}</td>
+          <td>
+            {% if booking.status == "active" and booking.event.status != "cancelled" and not booking.event.is_over %}
+              <form method="post" action="{% url 'events:cancel_booking' booking.pk %}">
+                {% csrf_token %}<button class="text-button" type="submit">Скасувати бронювання</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}<tr><td colspan="4">Бронювань поки немає.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

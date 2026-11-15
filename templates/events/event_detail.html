@@ -1,0 +1,33 @@
+{% extends "events/base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<a class="text-link" href="{% url 'events:event_list' %}">← До всіх заходів</a>
+<article class="detail-card">
+  <div class="card-top"><span class="tag">{{ event.category }}</span><span class="tag">{{ event.get_status_display }}</span></div>
+  <h1>{{ event.title }}</h1>
+  <p class="lead">{{ event.description|linebreaksbr }}</p>
+  <dl>
+    <dt>Дата початку</dt><dd>{{ event.starts_at|date:"d.m.Y H:i" }}</dd>
+    {% if event.ends_at %}<dt>Дата завершення</dt><dd>{{ event.ends_at|date:"d.m.Y H:i" }}</dd>{% endif %}
+    <dt>Місце проведення</dt><dd>{{ event.location }}</dd>
+    <dt>Організатор</dt><dd>{{ event.organizer.get_full_name|default:event.organizer.username }}</dd>
+    <dt>Ціна</dt><dd>{% if event.price == 0 %}Безкоштовно{% else %}{{ event.price }} грн{% endif %}</dd>
+    <dt>Вільні місця</dt><dd>{{ event.available_seats }} / {{ event.capacity }}</dd>
+  </dl>
+  {% if user.is_authenticated %}
+    {% if booking %}
+      <p class="message info">Ваше бронювання: {{ booking.display_status|lower }}.</p>
+    {% elif user.id == event.organizer_id %}
+      <p>Ви організатор цього заходу, тому бронювання для вас недоступне.</p>
+    {% elif event.status == "published" and not event.is_over and event.available_seats %}
+      <form method="post" action="{% url 'events:book_event' event.pk %}">
+        {% csrf_token %}<button class="button" type="submit">Забронювати місце</button>
+      </form>
+    {% else %}
+      <p>Бронювання для цього заходу недоступне.</p>
+    {% endif %}
+  {% else %}
+    <p><a class="text-link" href="{% url 'events:login' %}?next={{ request.path }}">Увійдіть</a>, щоб забронювати місце.</p>
+  {% endif %}
+</article>
+{% endblock %}

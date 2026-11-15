@@ -1,0 +1,16 @@
+{% extends "events/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<section class="form-card wide">
+  <h1>{{ title }}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <label class="form-field">{{ field.label }}{{ field }}{% for error in field.errors %}<span class="error">{{ error }}</span>{% endfor %}</label>
+    {% endfor %}
+    {% for error in form.non_field_errors %}<p class="error">{{ error }}</p>{% endfor %}
+    <button class="button" type="submit">Зберегти захід</button>
+    <a class="button secondary" href="{% url 'events:organizer_events' %}">Скасувати</a>
+  </form>
+</section>
+{% endblock %}

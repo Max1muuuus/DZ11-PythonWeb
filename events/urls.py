@@ -1,0 +1,26 @@
+from django.contrib.auth import views as auth_views
+from django.urls import path
+
+from . import views
+
+app_name = "events"
+
+urlpatterns = [
+    path("", views.event_list, name="event_list"),
+    path("events/<int:pk>/", views.event_detail, name="event_detail"),
+    path("events/<int:pk>/book/", views.book_event, name="book_event"),
+    path("register/", views.register, name="register"),
+    path(
+        "login/",
+        auth_views.LoginView.as_view(template_name="registration/login.html"),
+        name="login",
+    ),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("profile/", views.profile, name="profile"),
+    path("profile/edit/", views.profile_edit, name="profile_edit"),
+    path("bookings/<int:pk>/cancel/", views.cancel_booking, name="cancel_booking"),
+    path("organizer/events/", views.organizer_events, name="organizer_events"),
+    path("organizer/events/new/", views.event_create, name="event_create"),
+    path("organizer/events/<int:pk>/edit/", views.event_edit, name="event_edit"),
+    path("organizer/events/<int:pk>/delete/", views.event_delete, name="event_delete"),
+]

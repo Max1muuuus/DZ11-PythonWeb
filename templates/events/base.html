@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Події{% endblock %} — EventHub</title>
+  <link rel="stylesheet" href="{% static 'events/style.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'events:event_list' %}">EventHub</a>
+    <nav>
+      <a href="{% url 'events:event_list' %}">Заходи</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'events:profile' %}">Мій профіль</a>
+        {% if user.can_manage_events %}
+          <a href="{% url 'events:organizer_events' %}">Керування заходами</a>
+        {% endif %}
+        {% if user.is_moderator %}<a href="{% url 'admin:index' %}">Адмінпанель</a>{% endif %}
+        <form class="inline-form" method="post" action="{% url 'events:logout' %}">
+          {% csrf_token %}<button class="nav-button" type="submit">Вийти</button>
+        </form>
+      {% else %}
+        <a href="{% url 'events:login' %}">Увійти</a>
+        <a href="{% url 'events:register' %}">Реєстрація</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="container">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>EventHub · Платформа організації та бронювання заходів</footer>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "events/base.html" %}
+{% block title %}Керування заходами{% endblock %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Панель організатора</p><h1>Керування заходами</h1></div><a class="button" href="{% url 'events:event_create' %}">Створити захід</a></section>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Назва</th><th>Дата</th><th>Статус</th><th>Бронювання</th><th>Дії</th></tr></thead>
+    <tbody>
+      {% for event in events %}
+        <tr>
+          <td><a href="{% url 'events:event_detail' event.pk %}">{{ event.title }}</a></td>
+          <td>{{ event.starts_at|date:"d.m.Y H:i" }}</td>
+          <td>{{ event.get_status_display }}</td>
+          <td>{{ event.active_booking_count }} / {{ event.capacity }}</td>
+          <td class="actions">
+            <a href="{% url 'events:event_edit' event.pk %}">Редагувати</a>
+            <form method="post" action="{% url 'events:event_delete' event.pk %}" onsubmit="return confirm('Видалити цей захід?')">
+              {% csrf_token %}<button class="text-button danger" type="submit">Видалити</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}<tr><td colspan="5">Ви ще не створили жодного заходу.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
